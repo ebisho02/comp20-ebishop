@@ -2,9 +2,7 @@ function parse() {
 	request = new XMLHttpRequest();
 	request.open("GET", "data.json", true);
 	request.onreadystatechange = function() {
-		console.log("Hello!");
 		if (request.readyState == 4) {
-			console.log("Got the data back!");
 			data = request.responseText;
 			console.log(data);
 			msg = JSON.parse(data);
