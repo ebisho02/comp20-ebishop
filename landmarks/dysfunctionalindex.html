@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Landmarks</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+    <link rel="stylesheet" href="style.css" />
+    
+    <script>
+      var myLat = 0;
+      var myLng = 0;
+      var me = new google.maps.LatLng(myLat, myLng);
+      var myOptions = {
+            zoom: 13, 
+            center: me,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+      var map;
+      var marker;
+      var coordinates;
+      var infowindow = new google.maps.InfoWindow();
+      var request = new XMLHttpRequest();
+      var url = "https://defense-in-derpth.herokuapp.com/sendLocation";
+      var params = "login=BRIDGETTE_HANSEN&lat=" + myLat + "&lng=" + myLng;
+      var elemData;
+      
+      function init()
+      {
+        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+        getMyLocation();
+      }
+      
+      function getMyLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            elemLat = position.coords.latitude;
+            elemLng = position.coords.longitude;
+            description = "Here I am!";
+            renderMap();
+            openFriends();
+          });
+        }
+        else {
+          alert("Geolocation is not supported by your web browser.  What a shame!");
+        }
+      }
+
+      function renderMap()
+      {
+        element = new google.maps.LatLng(elemLat, elemLng);
+        
+        map.panTo(element);
+  
+        marker = new google.maps.Marker({
+          position: element,
+          title: description, 
+        });
+        marker.setMap(map);
+          
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.setContent(marker.title);
+          infowindow.open(map, marker);
+        });
+      }
+
+      function openFriends() 
+      {
+        request.open("POST", url, true);
+        request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        request.onreadystatechange = displayFriends;
+        request.send(params);
+      }
+
+      function displayFriends()
+      {
+        if (request.readyState == 4 && request.status == 200) {     
+          raw = request.responseText;
+          elemData = JSON.parse(raw);
+          console.log(elemData);
+          for (i = 0; i < elemData["people"].length; i++) {
+            elemLat = elemData["people"][i]["lat"];
+            elemLng = elemData["people"][i]["lng"];
+            description = elemData["people"][i]["login"];
+            renderMap();
+          }
+          //for(i = 0; i < LatLong["landmarks"].length; i++) {
+            //coodinates = LatLong["landmarks"][i]["geometry"]["coordinates"];
+            //description = LatLong["landmarks"][i]["properties"];
+            //renderLandmarks();
+          //}
+        }
+      }
+    </script>
+  </head>
+  
+  <body onload="init()">
+    <div id="map_canvas"></div>
+  </body>
+</html>
+
+NEW
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Landmarks</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+    <script>
+      console.log("HELLO!!");
+      var myLat = 0;
+      var myLng = 0;
+      var request = new XMLHttpRequest();
+      var me = new google.maps.LatLng(myLat, myLng);
+      var myOptions = {
+            zoom: 13, 
+            center: me,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+      };
+      var marker;
+      var map;
+      var infowindow = new google.maps.InfoWindow();
+
+      function initMap() 
+      {
+        console.log("here now")
+        map = new google.maps.Map(document.getElementById("map_elem"), myOptions);
+        getMyLocation();
+      }
+
+
+
+      function getMyLocation() 
+      {
+        if (navigator.geolocation) { 
+          navigator.geolocation.getCurrentPosition(function(position) {
+            myLat = position.coords.latitude;
+            myLng = position.coords.longitude;
+            console.log("location");
+            renderMap();
+          });
+        console.log("got location");
+        }
+        else {
+          alert("Geolocation is not supported by your web browser.  Sorry!");
+        }
+      }
+
+      function renderMap() 
+      {
+        me = new google.maps.LatLng(myLat, myLng);
+        
+        map.panTo(me);
+  
+        // Create a marker
+        marker = new google.maps.Marker({
+          position: me,
+          title: "Here I Am!"
+        });
+        marker.setMap(map);
+        console.log("got here");
+        // Open info window on click of marker
+        google.maps.event.addListener(marker, 'click', function() {
+          console.log("right before open");
+          infowindow.setContent(marker.title);
+          infowindow.open(map, marker);
+          console.log("made it thru whole script");
+        });
+      }
+
+    </script>
+  </head>
+  <body onload="initMap()">
+    <div id="map_elem"></div>
+  </body>
+
+</html>

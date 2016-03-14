@@ -4,7 +4,6 @@ function parse() {
 	request.onreadystatechange = function() {
 		if (request.readyState == 4) {
 			data = request.responseText;
-			console.log(data);
 			msg = JSON.parse(data);
 			elem = document.getElementById("messages");
 			for (i = 0; i < msg.length; i++) {

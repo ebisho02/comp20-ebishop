@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Landmarks</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+    <link rel="stylesheet" href="style.css" />
+    
+    <script>
+      var myLat = 0;
+      var myLng = 0;
+      var me = new google.maps.LatLng(myLat, myLng);
+      var myOptions = {
+            zoom: 15, 
+            center: me,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+      var map;
+      var marker;
+      var coordinates;
+      var infowindow = new google.maps.InfoWindow();
+      var request = new XMLHttpRequest();
+      var url = "https://defense-in-derpth.herokuapp.com/sendLocation";
+      var elemData;
+      var myImage = "me.png";
+      var friendsImage = "friends.png";
+      var landmarkImage = "landmark.png";
+      
+      function init()
+      {
+        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+        getMyLocation();
+      }
+      
+      function getMyLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            myLat = position.coords.latitude;
+            myLng = position.coords.longitude;
+            description = "ebisho02";
+            element = new google.maps.LatLng(myLat, myLng);
+        
+            map.panTo(element);
+      
+            marker = new google.maps.Marker({
+              position: element,
+              title: description, 
+              icon: myImage,
+              //label: __,
+            });
+            marker.setMap(map);
+            google.maps.event.addListener(marker, 'click', function() {
+            infowindow.setContent(this.title);
+            infowindow.open(map, this);
+            });
+            
+            openFriends();
+          });
+        }
+        else {
+          alert("Geolocation is not supported by your web browser.  Sorry!");
+        }
+      }
+
+      function openFriends() 
+      {
+        request.open("POST", url, true);
+        request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        request.onreadystatechange = displayFriendsAndLandmarks;
+        request.send("login=BRIDGETTE_HANSEN&lat=" + myLat + "&lng=" + myLng);
+      }
+
+      function displayFriendsAndLandmarks()
+      {
+        if (request.readyState == 4 && request.status == 200) {     
+          raw = request.responseText;
+          elemData = JSON.parse(raw);
+          console.log(elemData);
+          for (i = 0; i < elemData["landmarks"].length; i++) {
+            elemLat = elemData["landmarks"][i]["geometry"]["coordinates"][0];
+            elemLng = elemData["landmarks"][i]["geometry"]["coordinates"][1];
+            description = elemData["landmarks"][i]["properties"]["Location_Name"];
+            console.log(description);
+            console.log(elemLat);
+            element = new google.maps.LatLng(elemLat, elemLng);
+            marker = new google.maps.Marker({
+              position: element,
+              title: description, 
+              icon: landmarkImage,
+            });
+            marker.setMap(map);
+
+           google.maps.event.addListener(marker, 'click', function() {
+            infowindow.setContent(this.title);
+            infowindow.open(map, this);
+          });
+        }
+          for (i = 0; i < elemData["people"].length; i++) {
+            elemLat = elemData["people"][i]["lat"];
+            elemLng = elemData["people"][i]["lng"];
+            description = elemData["people"][i]["login"];
+            element = new google.maps.LatLng(elemLat, elemLng);
+            
+            marker = new google.maps.Marker({
+              position: element,
+              title: description, 
+              icon: friendsImage,
+            });
+          marker.setMap(map);
+
+        google.maps.event.addListener(marker, 'click', function() {
+            infowindow.setContent(this.title);
+            infowindow.open(map, this);
+        });
+          }
+        }
+
+    }
+    </script>
+  </head>
+  
+  <body onload="init()">
+    <div id="map_canvas"></div>
+  </body>
+</html>
