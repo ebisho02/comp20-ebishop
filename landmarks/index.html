@@ -18,7 +18,6 @@
       };
       var map;
       var marker;
-      var coordinates;
       var infowindow = new google.maps.InfoWindow();
       var request = new XMLHttpRequest();
       var url = "https://defense-in-derpth.herokuapp.com/sendLocation";
@@ -26,6 +25,10 @@
       var myImage = "me.png";
       var friendsImage = "friends.png";
       var landmarkImage = "landmark.png";
+      var closestLandmarkDistance = 1;
+      var closestLandmark;
+      var closestLandmarkLat;
+      var closestLandmarkLng;
       
       function init()
       {
@@ -38,23 +41,22 @@
           navigator.geolocation.getCurrentPosition(function(position) {
             myLat = position.coords.latitude;
             myLng = position.coords.longitude;
-            description = "ebisho02";
-            element = new google.maps.LatLng(myLat, myLng);
+            me = new google.maps.LatLng(myLat, myLng);
         
-            map.panTo(element);
-      
+            map.panTo(me);
+      /*
             marker = new google.maps.Marker({
-              position: element,
+              position: me,
               title: description, 
               icon: myImage,
               //label: __,
             });
             marker.setMap(map);
             google.maps.event.addListener(marker, 'click', function() {
-            infowindow.setContent(this.title);
-            infowindow.open(map, this);
+              infowindow.setContent(this.title);
+              infowindow.open(map, this);
             });
-            
+            */
             openFriends();
           });
         }
@@ -71,52 +73,127 @@
         request.send("login=BRIDGETTE_HANSEN&lat=" + myLat + "&lng=" + myLng);
       }
 
+      Number.prototype.toRad = function() {
+        return this * Math.PI / 180;
+      }
+
       function displayFriendsAndLandmarks()
       {
         if (request.readyState == 4 && request.status == 200) {     
           raw = request.responseText;
           elemData = JSON.parse(raw);
-          console.log(elemData);
+
+          // First, render landmarks within one mile from me
           for (i = 0; i < elemData["landmarks"].length; i++) {
-            elemLat = elemData["landmarks"][i]["geometry"]["coordinates"][0];
-            elemLng = elemData["landmarks"][i]["geometry"]["coordinates"][1];
+            elemLat = elemData["landmarks"][i]["geometry"]["coordinates"][1];
+            elemLng = elemData["landmarks"][i]["geometry"]["coordinates"][0];
             description = elemData["landmarks"][i]["properties"]["Location_Name"];
-            console.log(description);
-            console.log(elemLat);
+
             element = new google.maps.LatLng(elemLat, elemLng);
+
+            var lat2 = myLat; 
+            var lon2 = myLng; 
+            var lat1 = elemLat; 
+            var lon1 = elemLng; 
+
+            var R = 6371; 
+            var x1 = lat2-lat1;
+            var dLat = x1.toRad();  
+            var x2 = lon2-lon1;
+            var dLon = x2.toRad();  
+            var a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
+                            Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * 
+                            Math.sin(dLon/2) * Math.sin(dLon/2);  
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
+            var d = R * c; 
+            // convert from km to miles
+            d = d / 1.609344;
+
+            if (d < closestLandmarkDistance) {
+              closestLandmarkDistance = d;
+              closestLandmark = description;
+              closestLandmarkLat = elemLat;
+              closestLandmarkLng = elemLng;
+
+            }
+
             marker = new google.maps.Marker({
               position: element,
-              title: description, 
+              title: "<h1>" + description + "</h1><p> is " + d + " miles away from me!</p>", 
               icon: landmarkImage,
             });
             marker.setMap(map);
 
-           google.maps.event.addListener(marker, 'click', function() {
-            infowindow.setContent(this.title);
-            infowindow.open(map, this);
-          });
-        }
+            google.maps.event.addListener(marker, 'click', function() {
+              infowindow.setContent(this.title);
+              infowindow.open(map, this);
+            });
+          }
+
+          // next, render other students
           for (i = 0; i < elemData["people"].length; i++) {
             elemLat = elemData["people"][i]["lat"];
             elemLng = elemData["people"][i]["lng"];
             description = elemData["people"][i]["login"];
             element = new google.maps.LatLng(elemLat, elemLng);
             
+            var lat2 = myLat; 
+            var lon2 = myLng; 
+            var lat1 = elemLat; 
+            var lon1 = elemLng; 
+
+            var R = 6371; 
+            var x1 = lat2-lat1;
+            var dLat = x1.toRad();  
+            var x2 = lon2-lon1;
+            var dLon = x2.toRad();  
+            var a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
+                            Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * 
+                            Math.sin(dLon/2) * Math.sin(dLon/2);  
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
+            var d = R * c; 
+            // convert from km to miles
+            d = d / 1.609344;
+  
             marker = new google.maps.Marker({
               position: element,
-              title: description, 
+              title: "<h1>" + description + "</h1><p> is " + d + " miles away from me!</p>", 
               icon: friendsImage,
             });
-          marker.setMap(map);
+            marker.setMap(map);
 
-        google.maps.event.addListener(marker, 'click', function() {
-            infowindow.setContent(this.title);
-            infowindow.open(map, this);
-        });
+            google.maps.event.addListener(marker, 'click', function() {
+              infowindow.setContent(this.title);
+              infowindow.open(map, this);
+            });
+
+            marker = new google.maps.Marker({
+              position: me,
+              title: "<h1> Hello! </h1> <p> My name is ebisho02. </p> <p> The closest landmark to me is " + closestLandmark + "</p> <p> It is " + closestLandmarkDistance + " miles away.</p>", 
+              icon: myImage,
+            });
+
+            var myLineCoordinates = [
+              {lat: myLat, lng: myLng},
+              {lat: closestLandmarkLat, lng: closestLandmarkLng}
+            ];
+
+            var myLine = new google.maps.Polyline({
+              path: myLineCoordinates,
+              geodesic: true,
+              strokeColor: '#FF0000',
+              strokeOpacity: 1.0,
+              strokeWeight: 2
+            });
+            myLine.setMap(map);
+            marker.setMap(map);
+            google.maps.event.addListener(marker, 'click', function() {
+              infowindow.setContent(this.title);
+              infowindow.open(map, this);
+            });
           }
         }
-
-    }
+      }
     </script>
   </head>
   
