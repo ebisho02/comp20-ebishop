@@ -119,7 +119,7 @@
 
             marker = new google.maps.Marker({
               position: element,
-              title: "<h1>" + description + "</h1><p> is " + d + " miles away from me!</p>", 
+              title: "<h1>" + description + "</h1><p> is " + d + " miles away from me!</p><p>Details: " + elemData["landmarks"][i]["properties"]["Details"] + "</p>",
               icon: landmarkImage,
             });
             marker.setMap(map);
