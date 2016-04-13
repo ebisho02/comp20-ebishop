@@ -20,7 +20,7 @@
       var marker;
       var infowindow = new google.maps.InfoWindow();
       var request = new XMLHttpRequest();
-      var url = "https://defense-in-derpth.herokuapp.com/sendLocation";
+      var url = "http://fast-crag-18419.herokuapp.com/sendLocation";
       var elemData;
       var myImage = "me.png";
       var friendsImage = "friends.png";
@@ -44,19 +44,6 @@
             me = new google.maps.LatLng(myLat, myLng);
         
             map.panTo(me);
-      /*
-            marker = new google.maps.Marker({
-              position: me,
-              title: description, 
-              icon: myImage,
-              //label: __,
-            });
-            marker.setMap(map);
-            google.maps.event.addListener(marker, 'click', function() {
-              infowindow.setContent(this.title);
-              infowindow.open(map, this);
-            });
-            */
             openFriends();
           });
         }
@@ -137,7 +124,7 @@
             description = elemData["people"][i]["login"];
             element = new google.maps.LatLng(elemLat, elemLng);
             
-            var lat2 = myLat; 
+            /*var lat2 = myLat; 
             var lon2 = myLng; 
             var lat1 = elemLat; 
             var lon1 = elemLng; 
@@ -153,11 +140,11 @@
             var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
             var d = R * c; 
             // convert from km to miles
-            d = d / 1.609344;
+            d = d / 1.609344;*/
   
             marker = new google.maps.Marker({
               position: element,
-              title: "<h1>" + description + "</h1><p> is " + d + " miles away from me!</p>", 
+              title: "<h1>" + description + "</h1><p> is " + 00 + " miles away from me!</p>", 
               icon: friendsImage,
             });
             marker.setMap(map);
