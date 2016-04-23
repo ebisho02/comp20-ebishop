@@ -20,7 +20,8 @@
       var marker;
       var infowindow = new google.maps.InfoWindow();
       var request = new XMLHttpRequest();
-      var url = "http://fast-crag-18419.herokuapp.com/sendLocation";
+      //var url = "https://fast-crag-18419.herokuapp.com/sendLocation";
+      var url = "https://ancient-beach-16992.herokuapp.com/sendLocation";
       var elemData;
       var myImage = "me.png";
       var friendsImage = "friends.png";
@@ -68,6 +69,7 @@
       {
         if (request.readyState == 4 && request.status == 200) {     
           raw = request.responseText;
+          console.log(raw);
           elemData = JSON.parse(raw);
 
           // First, render landmarks within one mile from me

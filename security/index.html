@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title>Assignment 4</title>
+	<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+	<h1>COMP20: Assignment 4</h1>
+		<p>by: Elizabeth Bishop</p>
+		<p>Last modified: April 23, 2016</p>
+
+	<h2>Introduction:</h2>
+		<p>This document assesses the security of Elias's "Historic Landmarks" 
+		application. "Historic Landmarks" is a web application that "maintains
+		location check-ins (login, latitute, and longitude)... and serves data
+		on the nearest U.S. historic landmarks within a mile of where you are."
+		"Historic Landmarks" can be connected with a web page that retrieves and
+		displays the locations of other people who checked-in to the app and the 
+		nearest historic landmarks on a map. The application, however, is not
+		secure and can be manipulated by users. This report will outline such
+		vulnerabilities.  </p>
+		<p> Elias's app can be found 
+			<a href= "https://ancient-beach-16992.herokuapp.com/">here</a>.</p>
+	<h2>Methodology:</h2>
+		<p>Using "curl" from my terminal, I sent different sorts of unexpected
+		data to Elias's server. I sent all data using the expected format of
+		providing a login variable, a latitude variable, and a longitude 
+		variable, but I gave each of these variables unexpected values.
+		Just through this method, I was able to find several vulnerabilities, 
+		which are outlined below. </p>
+
+	<h2>Abstract of Findings:</h2>
+		<p> Will write this later.
+		</p>
+	<h2>Issues Found:</h2>
+		<li>Cross site scripting</li>
+			<div class = issue> wow 
+			</div>
+			<div class = issue> <img src="surprise.png" alt="login = 
+				surprised child" title="Surprised child" />
+			</div>
+		<li>Mongo queries</li>
+			<div class = issue> this is great
+			</div>
+			<div class = issue> <img src="mongo.png" alt="querying mongo" 
+				title="Illegal mongo query" />
+			</div>
+		<li>Sending Data incompatable with Google Maps API</li>
+			<div class = issue> wow
+			</div>
+			<div class = issue> <img src="confusing.png" alt="Internal server
+				error" title="Sending illegal lat and long" />
+			</div>
+	<h2>Conclusion:</h2>
+		<p> Paying attention to security is very important because otherwise
+		people with bad intensions can distort the information that your users
+		receive, and may even put your users at risk of clicking through to 
+		malicious websites. Poor attention to security may also allow people
+		to access your or your user's personal information. Please be careful!
+		</p>
+</body>
+
+</html>

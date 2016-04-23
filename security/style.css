@@ -1,0 +1,30 @@
+h1 {
+	font-size: 25px;
+	font-family: Sans-serif;
+	margin-right: 8%;
+	margin-left: 8%
+}
+h2 {
+	font-size: 20px;
+	margin-right: 8%;
+	margin-left: 8%;
+	font-family: Sans-serif;
+}
+p {
+	font-size: 18px;
+	margin-right: 8%;
+	margin-left: 8%;
+	font-family: Sans-serif;
+}
+li {
+	font-size: 18px;
+	margin-right: 8%;
+	margin-left: 10%;
+	font-family: Sans-serif;
+}
+.issue {
+	font-size: 18px;
+	margin-right: 8%;
+	margin-left: 15%;
+	font-family: Sans-serif;
+}
