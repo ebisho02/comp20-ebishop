@@ -2,9 +2,9 @@ Assignment 4
 
 by: Elizabeth Bishop
 
-Time spent: ??
+Time spent: 4 hours
 
-Help from: ??
+Help from: COMP20 course staff
 
 Credits:
 This writeup is modeled after the written by Gabe Joseph
