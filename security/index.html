@@ -9,11 +9,9 @@
 </head>
 
 <body>
-
 	<h1>COMP20: Assignment 4</h1>
 		<p>by: Elizabeth Bishop</p>
-		<p>Last modified: April 23, 2016</p>
-
+		<p>Last modified: April 25, 2016</p>
 	<h2>Introduction:</h2>
 		<p>This document assesses the security of Elias's "Historic Landmarks" 
 		application. "Historic Landmarks" is a web application that "maintains
@@ -27,12 +25,15 @@
 		<p> Elias's app can be found 
 			<a href= "https://ancient-beach-16992.herokuapp.com/">here</a>.</p>
 	<h2>Methodology:</h2>
-		<p>Using "curl" from my terminal, I sent different sorts of unexpected
-		data to Elias's server. I sent all data using the expected format of
-		providing a login variable, a latitude variable, and a longitude 
-		variable, but I gave each of these variables unexpected values.
-		Just through this method, I was able to find several vulnerabilities, 
-		which are outlined below. </p>
+		<p>For my first, third, and fourth bullet points, I used "curl" from my 
+		terminal, to send different sorts of unexpected data to Elias's server. 
+		I sent all data using the expected format of providing a login variable,
+		 a latitude variable, and a longitude variable, but I gave one of these
+		 variables an unexpected value. For the second bullet point, I inserted
+		 an unexpected field into the url of one of the pages of the web 
+		 application. Because the app does not check to make sure that the url
+		 or posted data meets certain expectations, sending unexpected data
+		 allowed me to pinpoint several vulnerabilities. </p>
 
 	<h2>Abstract of Findings:</h2>
 		<p> Because this app was written without taking into security into 
@@ -40,15 +41,15 @@
 		that people can potentially alter the body of the app's web pages (and
 		cause it to contain malicious content), query the app's information in
 		unexpected ways (potentially allowing private information to be 
-		exposed), and send the app bad data, causing server errors. These 
+		exposed), and generally attack the application and its users. These 
 		scenarios, and recommendations as to how they should be resolved, are
 		listed below. 
 		</p>
-	<h2>Issues Found:</h2>
-		<li>Cross site scripting</li>
+	<h2>Description of Three Issues that Were Found:</h2>
+		<li>Injection of HTML</li>
 			<ul><li> Location: /sendLocation POST requests</li>
-				<li> Severity of Issue: High. If someone were to inject an 
-					 inappropriate image into your database, it would be 
+				<li> Severity of Issue: High. If someone were to inject 
+					 inappropriate content into your database, it would be 
 					 displayed on both your index page and your /checkins.json
 					 page. It would severely tarnish the reputation of your
 					 application. </li>
@@ -57,7 +58,7 @@
 					 user may send any data through this form: words, numbers,
 					 even images. The below image shows the data that I entered
 					 when I entered my login as an image.</li> </ul>
-			<div class = issue> <img src="xssphoto.png" alt="injecting a photo
+			<div class = issue> <img src="curlbaby.png" alt="injecting a photo
 				using curl" title="using curl to send an image to the database
 				" /> </div>
 				<ul><li> Proof of vulnerability: The below image shows one of
@@ -67,7 +68,8 @@
 						 viewed by anyone visiting the application's index page
 						 (or its /checkins.json page). While the below image is 
 						 cute, it is not hard to imagine the other sorts of 
-						 images that people may post here. </li></ul>
+						 malicious things people might mangle your html with. 
+						 </li></ul>
 			<div class = issue> <img src="surprise.png" alt="login = 
 				surprised child" title=
 				"an undesirable image is appearing in the body of your web page"
@@ -75,10 +77,11 @@
 			<ul><li> Resolution: To resolve this issue, the server needs to 
 				assert that the data is receiving from a /sendLocation POST
 				request meets certain standards. For instance, there could be 
-				a statement that translates "<" and ">" characters into "left
-				tag" and "right tag." </li></ul>
+				a statement that translates "<" and ">" characters into 
+				"(ampersand character)lt" and "(ampersand character)gt." 
+			</li></ul>
 			</div>
-		<li>Mongo queries</li>
+		<li>Injection of Mongo Operator</li>
 			<ul><li> Location: /checkins.json</li>
 				<li> Severity of Issue: Low. At the moment, all of the data
 					accessible from the /checkins.json page can also be viewed
@@ -88,10 +91,11 @@
 					make the information accessible to the public.</li>
 				<li> Description of Issue: If you look at the below image,
 					 you can see the way that I altered the URL to contain
-					 the mongo query "login[$ne]=mchowgrading". /checkins.json
+					 the mongo operator [$ne] (which stands for not equals) 
+					 "login[$ne]=mchowgrading". The page /checkins.json
 					 is supposed to return all records for a given login. 
-					 However, by using mongo querying format, the page can
-					 be manipulated to provide other kinds of data. For 
+					 However, by using injecting [$ne], the page can be
+					 manipulated to provide other kinds of data. For 
 					 instance, it can return all data that doesn't equal
 					 a certain login.
 					</li>
@@ -108,11 +112,57 @@
 				the server is storing the query string as a Javascript object.
 				I recommend that this data is instead stored as a string, so 
 				that it cannot be used as a mongo query.</li></ul>
-		<li>Sending Data incompatable with Google Maps API</li>
+		<li>Cross-site Scripting</li>
 			<ul><li> Location: /sendLocation POST requests</li>
-				<li> Severity of Issue: High. This issue causes the server to
-					crash, and unreliability is a bad feature for a web
-					application to provide to its users. </li> 
+				<li> Severity of Issue: High. Cross site scripting is very 
+					dangerous because it can be used to steal user information,
+					redirect web pages to malicious web pages, and do other
+					bad things that are sure to drive users away from your 
+					application.
+				 </li> 
+				<li> Description of Issue: Similarly to the HTML injection 
+					 bullet point, cross-site scripting can take advantage of 
+					 the fact that anyone can send
+					 to the app data in the form of "login=X&lat=X&lng=X" The 
+					 user may send any data through this form: words, numbers,
+					 even images. In a cross-site scripting attack, the 
+					 attacker sends a script to the app. This script is then
+					 stored in the database, and eventually displayed on the
+					 home page of the application. In that HTML page, the
+					 script, which the application expects to be a login or
+					 a latitude or longitude value, is then run from that page.
+					</li>
+				</ul>
+			<div class = issue> <img src="curl_xss.png" alt="xss attack" 
+				title=
+				"popup generated by cross site scripting attack"/>
+			</div>
+			<ul><li> Proof of vulnerability: The below image shows what happens
+					 when you send a simple script to the page. This script
+					 causes an annoying pop up, but, as stated earlier, in a 
+					 real attack could instead contain something much more
+					 troublesome.</li>
+			</ul>
+			<div class = issue> <img src="xss.png" alt="xss attack" 
+				title=
+				"popup generated by cross site scripting attack"/>
+			</div>
+			<ul><li> Resolution: I recommend the same resolution as I would for
+				     the issue of HTML injection. You could write an assertion
+				     that checks the data before it is entered in the database,
+				     and translates "<" and ">" tags to 
+				     "(ampersand character)lt" and "(ampersand character)gt."
+				 </li>
+			</ul>
+		<li>Sending data incompatable with Google Maps API</li>
+			<ul><li> Location: /sendLocation POST requests</li>
+				<li> Severity of Issue: Medium. This issue causes the server 
+					send an incomprehensible error message, and behaves 
+					in a way that does not meet specifications. 
+					An unreliable application that creates unexpected
+					results is not the kind of application that you should
+					provide to your users if you want them to continue to
+					use your application.</li> 
 				<li> Description of Issue: When latitude or longitude
 					values exceed what is possible (the maximum possible 
 					latitude is 90 and the maximum possible longitude is
@@ -125,10 +175,20 @@
 				<li> Proof of vulnerability: The server crashing can be seen
 					in the image depicted below. I sent the server a latitude
 					of 200 and a longitude of 200, and received back a
-					strange error message that was not specified by Elias.</li>
+					strange error message that was not specified by Elias.
+					Additionally, if you look at the second image, you can see
+					that the data, is stored in the database, despite the fact
+					that the expected json array response of check-ins and 
+					landmarks is not returned. </li>
 			</ul>
-			<div class = issue> <img src="confusing.png" alt="Internal server
-				error" title="Sending illegal latitude and longitude" />
+			<div class = issue> <img src="confusing.png" alt="error message" 
+				title=
+				"error generated by sending illegal latitude and longitude"/>
+			</div>
+			<div class = issue> <img src="confusing2.png" alt="proof that it
+				entered database" 
+				title=
+				"bad data is stored in database"/>
 			</div>
 			<ul><li> Resolution: When accepting data from the POST request,
 				check to make sure that the longitude and latitude values are 
@@ -141,11 +201,11 @@
 		receive, and may even put your users at risk of clicking through to 
 		malicious websites. Poor attention to security may also allow people
 		to access your or your user's personal information. Please be careful!
-		As far as the costs associated with resolving these issues, I admit
-		that I have no idea. To be honest, with a bit of searching the web,
-		you could probably solve the issues yourself! That's how I found the 
-		issues with the app, so that is probably a safe bet to solving the
-		issues with the app. Good luck!
+		Fixing these issues will not cost much and will make your application
+		more reliable and pleasing to your users. I think that you could solve
+		them yourself, and thus cost yourself nothing, if you just spend some
+		time searching the internet for advice as to how to code the solutions
+		recommended above.
 		</p>
 </body>
 
