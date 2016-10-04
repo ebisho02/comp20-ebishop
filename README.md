@@ -1,8 +1,7 @@
 1. This repository contains many of the assignments I worked on while taking
    Ming's Web Programming course.
 2. My favorite assignment was Assignment 2, because the end product reflected
-   the amount of time and effort I put into it. Actually writing the code
-   for it was not my favorite, though.
+   the amount of time and effort I put into it. 
 3. I've grown a lot since day one of the course, I now have a much better 
    understanding of the way the web works and the architecture of web 
    applications. 
